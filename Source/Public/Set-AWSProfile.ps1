@@ -39,13 +39,21 @@ function Set-AWSProfile {
         [Alias('Name')]
         [string[]]$ProfileName
     )
+    begin {
+        if (!$env:AWP_FZF_OPTS)  {
+            $AWP_FZF_OPTS = '--ansi', '--layout=reverse', '--border', '--height', '60%'
+        }
+        else {
+            $AWP_FZF_OPTS = $env:AWP_FZF_OPTS
+        } 
+    }
     
     process {
         if ($PSBoundParameters.ContainsKey('ProfileName')) {
-            $selectedProfile = aws configure list-profiles | fzf -q $ProfileName --select-1 --exit-0
+            $selectedProfile = aws configure list-profiles | fzf -q $ProfileName --select-1 --exit-0 $AWP_FZF_OPTS
         }
         else {
-            $selectedProfile = aws configure list-profiles | fzf
+            $selectedProfile = aws configure list-profiles | fzf $AWP_FZF_OPTS
         }
     
         If ($selectedProfile) {

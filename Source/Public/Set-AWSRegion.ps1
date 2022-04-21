@@ -38,13 +38,20 @@ Function Set-AWSRegion {
         [Alias('Region')]
         [string[]]$RegionName
     )
-
-    process {
-        if ($PSBoundParameters.ContainsKey('RegionName')) {
-            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf -q $RegionName --select-1 --exit-0
+    begin {
+        if (!$env:AWP_FZF_OPTS)  {
+            $AWP_FZF_OPTS = '--ansi', '--layout=reverse', '--border', '--height', '60%'
         }
         else {
-            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf
+            $AWP_FZF_OPTS = $env:AWP_FZF_OPTS
+        } 
+    }
+    process {
+        if ($PSBoundParameters.ContainsKey('RegionName')) {
+            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf -q $RegionName --select-1 --exit-0 $AWP_FZF_OPTS
+        }
+        else {
+            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf $AWP_FZF_OPTS
         }
         
         If ($selectedRegion) {
