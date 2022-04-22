@@ -48,10 +48,10 @@ Function Set-AWSRegion {
     }
     process {
         if ($PSBoundParameters.ContainsKey('RegionName')) {
-            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf -q $RegionName --select-1 --exit-0 $AWP_FZF_OPTS
+            $selectedRegion = (aws ec2 describe-regions --no-all-regions | ConvertFrom-Json).Regions.RegionName | fzf -q $RegionName --select-1 --exit-0 $AWP_FZF_OPTS
         }
         else {
-            $selectedRegion = (aws ec2 describe-regions | ConvertFrom-Json).Regions.RegionName | fzf $AWP_FZF_OPTS
+            $selectedRegion = (aws ec2 describe-regions --no-all-regions | ConvertFrom-Json).Regions.RegionName | fzf $AWP_FZF_OPTS
         }
         
         If ($selectedRegion) {
